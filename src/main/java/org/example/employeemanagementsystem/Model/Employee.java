@@ -41,7 +41,7 @@ public class Employee {
 
 
     @NotNull(message = "Hire Date Cannot Be Null")
-    @FutureOrPresent(message = "Hire date should be present or in the future")
+    @PastOrPresent(message = "Hire date should be present or in the future")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime hireDate;
     @NotNull(message = "Annual leave Cannot Be Null")

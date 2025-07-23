@@ -17,21 +17,21 @@ public class EmployeeController {
 
 
     @GetMapping("/get")
-    public ResponseEntity<?> getEmployees(){
+    public ResponseEntity<?> getEmployees() {
         return ResponseEntity.ok(employees);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addEmployee(@Valid @RequestBody Employee employee, Errors err){
-        if(err.hasErrors()){
+    public ResponseEntity<?> addEmployee(@Valid @RequestBody Employee employee, Errors err) {
+        if (err.hasErrors()) {
             String error = err.getFieldError().getDefaultMessage();
             return ResponseEntity.badRequest().body(new ApiResponse(error));
         }
-        if(employee.isOnLeave()){
+        if (employee.isOnLeave()) {
             return ResponseEntity.badRequest().body(new ApiResponse("onLeave Must Be Set To False"));
         }
-        for (Employee e : employees){
-            if(employee.getID().equals(e.getID())){
+        for (Employee e : employees) {
+            if (employee.getID().equals(e.getID())) {
                 return ResponseEntity.badRequest().body(new ApiResponse("Employee With Given ID Already Exist."));
             }
         }
@@ -42,14 +42,14 @@ public class EmployeeController {
 
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateEmployee(@Valid @RequestBody Employee employee, Errors err){
-        if(err.hasErrors()){
+    public ResponseEntity<?> updateEmployee(@Valid @RequestBody Employee employee, Errors err) {
+        if (err.hasErrors()) {
             String error = err.getFieldError().getDefaultMessage();
             return ResponseEntity.badRequest().body(new ApiResponse(error));
         }
-        for (Employee e : employees){
-            if(e.getID().equals(employee.getID())){
-                employees.set(employees.indexOf(e),employee);
+        for (Employee e : employees) {
+            if (e.getID().equals(employee.getID())) {
+                employees.set(employees.indexOf(e), employee);
                 return ResponseEntity.ok(new ApiResponse("Employee Updated Successfully."));
             }
         }
@@ -59,9 +59,9 @@ public class EmployeeController {
 
 
     @DeleteMapping("/delete/{ID}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable String ID){
-        for (Employee e : employees){
-            if(ID.equals(e.getID())){
+    public ResponseEntity<?> deleteEmployee(@PathVariable String ID) {
+        for (Employee e : employees) {
+            if (ID.equals(e.getID())) {
                 employees.remove(e);
                 return ResponseEntity.ok(new ApiResponse("Employee Exist and Removed Successfully!"));
             }
@@ -70,13 +70,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/filter/{position}")
-    public ResponseEntity<?> searchByPosition(@PathVariable String position){
-       String pos = position.trim().toLowerCase();
-        switch (pos){
+    public ResponseEntity<?> searchByPosition(@PathVariable String position) {
+        String pos = position.trim().toLowerCase();
+        switch (pos) {
             case "coordinator", "supervisor":
                 ArrayList<Employee> filteredEmployees = new ArrayList<>();
-                for (Employee e : employees){
-                    if(e.getPosition().equalsIgnoreCase(pos)){
+                for (Employee e : employees) {
+                    if (e.getPosition().equalsIgnoreCase(pos)) {
                         filteredEmployees.add(e);
                     }
                 }
@@ -89,17 +89,17 @@ public class EmployeeController {
 
 
     @GetMapping("/filter/age/{min}/{max}")
-    public ResponseEntity<?> getEmployeeByAgeRange(@PathVariable int min,@PathVariable int max){
+    public ResponseEntity<?> getEmployeeByAgeRange(@PathVariable int min, @PathVariable int max) {
 
-        if(max <= min){
+        if (max <= min) {
             return ResponseEntity.badRequest().body(new ApiResponse("max should be bigger than min,/age/{min}/{max}"));
         }
-        if(min < 26){
+        if (min < 26) {
             return ResponseEntity.badRequest().body(new ApiResponse("min should be bigger than 25"));
         }
         ArrayList<Employee> filteredEmployees = new ArrayList<>();
-        for (Employee e: employees){
-            if(min > e.getAge()&& e.getAge() < max){
+        for (Employee e : employees) {
+            if (min > e.getAge() || e.getAge() < max) {
                 filteredEmployees.add(e);
             }
 
@@ -108,18 +108,18 @@ public class EmployeeController {
     }
 
     @PostMapping("/annual/apply/{ID}")
-    public ResponseEntity<?> applyForAnnualLeave(@PathVariable String ID){
+    public ResponseEntity<?> applyForAnnualLeave(@PathVariable String ID) {
 
-        for (Employee e:  employees){
-            if(ID.equals(e.getID())){
-                if(e.isOnLeave()){
+        for (Employee e : employees) {
+            if (ID.equals(e.getID())) {
+                if (e.isOnLeave()) {
                     return ResponseEntity.badRequest().body(new ApiResponse("Employee is on leave"));
-                }else {
-                    if(e.getAnnualLeave() > 0){
+                } else {
+                    if (e.getAnnualLeave() > 0) {
                         e.setOnLeave(true);
-                        e.setAnnualLeave(e.getAnnualLeave() -1);
+                        e.setAnnualLeave(e.getAnnualLeave() - 1);
                         return ResponseEntity.ok(new ApiResponse("Annual Leave Applied for: " + e.getName()));
-                    }else {
+                    } else {
                         return ResponseEntity.badRequest().body(new ApiResponse("Employee Annual Credit Insufficient"));
                     }
                 }
@@ -130,25 +130,23 @@ public class EmployeeController {
 
 
     @GetMapping("/annual/get/no-annual-leave")
-    public ResponseEntity<?> employeesWithNoAnnualLeave(){
+    public ResponseEntity<?> employeesWithNoAnnualLeave() {
         ArrayList<Employee> filteredEmployee = new ArrayList<>();
-        for (Employee e : employees){
-            if(e.getAnnualLeave() == 0){
+        for (Employee e : employees) {
+            if (e.getAnnualLeave() == 0) {
                 filteredEmployee.add(e);
             }
 
         }
-        if(filteredEmployee.isEmpty()){
+        if (filteredEmployee.isEmpty()) {
             return ResponseEntity.badRequest().body(new ApiResponse("All Employees Have Annual Leaves"));
         }
         return ResponseEntity.ok(filteredEmployee);
     }
 
 
-
-
     @PutMapping("/promote/{superID}/{promotedID}")
-    public ResponseEntity<?> promoteEmployee(@PathVariable String superID,@PathVariable String promotedID) {
+    public ResponseEntity<?> promoteEmployee(@PathVariable String superID, @PathVariable String promotedID) {
         boolean superflag = false;
 
         for (Employee e : employees) {
