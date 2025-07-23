@@ -150,7 +150,7 @@ public class EmployeeController {
         boolean superflag = false;
 
         for (Employee e : employees) {
-            if (e.getID().equals(superID)) {
+            if (e.getID().equals(superID) && e.getPosition().equalsIgnoreCase("Supervisor")) {
                 superflag = true;
                 break;
             }
